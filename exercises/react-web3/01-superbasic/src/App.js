@@ -3,6 +3,7 @@ import './App.css';
 import { Container, Form, Row, Col, InputGroup } from 'react-bootstrap';
 import Web3 from "web3";
 
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -13,22 +14,47 @@ class App extends React.Component {
       loading: false
     };
     this.handleChangeAddress = this.handleChangeAddress.bind(this);
-    this.web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
+    /** 
+     * Iniciando objeto Web3 
+     * @example this.web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
+     */
+    this.web3 = new Web3(process.env.REACT_APP_PROVIDER_URL);
   }
 
+  /**
+   * Función para manejar el evento onChange del campo #formAddress
+   * @param {*} event 
+   */
   async handleChangeAddress(event) {
     let address = event.target.value
+    /**
+     * Verificando que la dirección introducida es válida
+     */
     this.state.isAddress = await Web3.utils.isAddress(address)
     await this.setState({ address: address });
     if (this.state.isAddress) {
       this.setState({ loading: true });
-      await this.web3.eth.getBalance(this.state.address.toString())
+      /** Obteniendo el balance de la dirección introducida */
+      await this.web3.eth.getBalance(this.state.address)
         .then(response => (
-          this.setState({ loading: false, balance: response })
+          this.setState({ loading: false, balance: this.numberWithCommas(this.web3.utils.fromWei(response, 'ether')) })
         ));
     } else {
       this.setState({ balance: '' })
     }
+  }
+
+  /**
+   * Función para aplicar "," como separador de miles antes del "."
+   * @example
+   * this.numberWithCommas(6589652.7487) // 6,589,652.7487
+   * @param {number, string} x 
+   * @returns {string}
+   */
+  numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
   }
 
   render() {
