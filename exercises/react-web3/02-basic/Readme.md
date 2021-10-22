@@ -8,13 +8,13 @@ Debe crear en la raiz del proyecto el fichero .env con la
 siguiente variable REACT_APP_PROVIDER_URL y utilizar la red
 deseada.
 
-mainnet: https://bsc-dataseed1.binance.org:443
+mainnet: https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
 
-testnet: https://data-seed-prebsc-1-s1.binance.org:8545
+testnet: https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
 
 Ejemplo:
     
-    REACT_APP_PROVIDER_URL='https://bsc-dataseed1.binance.org:443'
+    REACT_APP_PROVIDER_URL='https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
 
 
 ##### Instalar dependencias:
