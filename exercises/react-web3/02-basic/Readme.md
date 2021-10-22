@@ -1,8 +1,7 @@
-# Binance Smart Chain
+# Ethereum
 Se obtiene el balance al insertar la dirección
-pública de una billetera.
-
-
+pública de una billetera y las transacciones.
+Nota: No es recomendable utilizar esta vía.
 
 ##### Pasos iniciales:
 Debe crear en la raiz del proyecto el fichero .env con la
