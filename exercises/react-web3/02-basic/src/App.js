@@ -14,6 +14,7 @@ class App extends React.Component {
       loading: false
     };
     this.handleChangeAddress = this.handleChangeAddress.bind(this);
+    this.checkBlock = this.checkBlock.bind(this);
     /** 
      * Iniciando objeto Web3 
      * @example this.web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545');
@@ -33,14 +34,78 @@ class App extends React.Component {
     this.state.isAddress = await Web3.utils.isAddress(address)
     await this.setState({ address: address });
     if (this.state.isAddress) {
+      var bal;
+
       this.setState({ loading: true });
       /** Obteniendo el balance de la dirección introducida */
       await this.web3.eth.getBalance(this.state.address)
-        .then(response => (
-          this.setState({ loading: false, balance: this.numberWithCommas(this.web3.utils.fromWei(response, 'ether')) })
-        ));
+        .then(response => {
+          this.setState({ loading: false, balance: this.numberWithCommas(this.web3.utils.fromWei(response, 'ether')) });
+          bal = response;
+        });
+
+      await this.checkBlock(bal);
+
     } else {
       this.setState({ balance: '' })
+    }
+  }
+
+  async checkBlock(bal) {
+    /**
+     * Obteniendo el número del bloque actual
+     */
+    var currentBlock = await this.web3.eth.getBlockNumber();
+    /**
+     * Obteniendo la cantidad de transacciones de salida
+     */
+    var txCountSend = await this.web3.eth.getTransactionCount(this.state.address);
+    var currentAddress = this.state.address.toLowerCase();
+
+    /**
+     * Ejecutariamos el proceso de busqueda, desde el bloque actual hacia el inicio,
+     * mientras el número de bloques sea >= 0 y al menos tengamos transacciones de
+     * salida o nuestro balance sea <= 0.
+     */
+    for (var i = currentBlock; i >= 0 && (txCountSend > 0 || bal > 0); --i) {
+      try {
+        let block = await this.web3.eth.getBlock(i);
+        if (block && block.transactions) {
+          /**
+           * Ciclo para recorrer el listado de hash de transacciones 
+           */
+          for (let txHash of block.transactions) {
+            /**
+             * Obteniendo la transacción correspondiente al ciclo
+             */
+            let tx = await this.web3.eth.getTransaction(txHash)
+            let from = tx.from.toLowerCase();
+            let to = tx.to.toLowerCase();
+            /**
+             * Verificando que la dirección insertada sea igual a la dirección de origen
+             * en la transacción
+             */
+            if (currentAddress === from) {
+              if (from !== to)
+                bal = bal + tx.value;
+              /**
+               * Descontando en 1 la cantidad de transacciones de salida
+               */
+              txCountSend--;
+              console.log("OUT: ", tx);
+            }
+            /**
+             * Verificando que la dirección insertada sea igual a la dirección de destino 
+             * en la transacción
+             */
+            if (currentAddress === to) {
+              if (from !== to)
+                bal = bal - tx.value;
+              console.log("IN: ", tx);
+            }
+          }
+        }
+      } catch (e) { console.error("Error en el bloque " + i, e); }
     }
   }
 
@@ -81,7 +146,7 @@ class App extends React.Component {
             <Col sm="10">
               <InputGroup>
                 <Form.Control type="text" placeholder="" value={this.state.loading ? 'Cargando...' : this.state.balance} readOnly />
-                <InputGroup.Text>BNB</InputGroup.Text>
+                <InputGroup.Text>ETH</InputGroup.Text>
               </InputGroup>
             </Col>
           </Form.Group>
