@@ -85,7 +85,6 @@ class App extends React.Component {
              * Obteniendo la transacción correspondiente al ciclo
              */
             let tx = await this.web3.eth.getTransaction(txHash)
-            this.appendRow(tx);
             let from, to;
             if (tx.from)
               from = tx.from.toLowerCase();
