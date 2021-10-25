@@ -1,6 +1,6 @@
 # Ethereum
 Se obtiene información del contrato
-Token BNB.
+Token BNB de la mainnet de Ethereum.
 
 ##### Instalar dependencias:
     
