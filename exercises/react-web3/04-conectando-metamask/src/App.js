@@ -75,6 +75,7 @@ class App extends React.Component {
     }
   }
    disconnectWallet(){
+     if(window.ethereum){
      window.ethereum.request({
       method: "wallet_requestPermissions",
       params: [
@@ -87,6 +88,9 @@ class App extends React.Component {
       window.localStorage.setItem("connected",true);
       that.connectWallet()
     });
+  }else{
+    alert('Por favor instale metamask');
+  }
   }
  
   async disconnectWalletS(){
