@@ -1,0 +1,6 @@
+.valid{
+    border:2px solid green
+}
+.novalid{
+    border: 2px solid red;
+}
