@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-
+/target
 # testing
 /coverage
 
@@ -28,9 +28,7 @@ yarn-error.log*
 */*/node_modules/
 */*/node_modules/*
 */node_modules/*
-/.idea/*
-*/target
 /.idea
 /.idea/*
+*/target
 */test-ledger
-*test-ledger/

@@ -24,13 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 
 *.idea/
-*/node_modules/
-*/*/node_modules/
-*/*/node_modules/*
-*/node_modules/*
-/.idea/*
-*/target
 /.idea
 /.idea/*
-*/test-ledger
-*test-ledger/

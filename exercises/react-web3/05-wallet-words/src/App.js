@@ -186,6 +186,17 @@ class App extends React.Component {
                             </div>
 
                         </div>
+                        <div className="form-group">
+                            <div className="row">
+                                <div className="col-lg-2  text-right">
+                                    <label className="control-label bold">BIP39
+                                        Seed:</label>
+                                </div>
+                                <div className="col-lg-9"><input type="text" className="form-control"
+                                                                 value={this.state.seed}></input></div>
+                            </div>
+
+                        </div>
                     </fieldset>
 
                     Mnemonic Language
