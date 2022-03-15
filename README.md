@@ -61,6 +61,9 @@ after replace this build and deploy again the program.(we must update this step 
 4- Move to folder /app and install dependencies using the comand 
 
         npm install
+5- Before run the aplication we need to update Token Id off the PDA by running the next command
+
+        ANCHOR_WALLET=~/.config/solana/id.json ANCHOR_PROVIDER_URL=http://127.0.0.1:8899 node setup/mint_address.js
 
 5- Run the aplication using comand
 

@@ -17,7 +17,7 @@ async function airdrop_usdc() {
 
     // Get the PDA that is the mint for the faucet
     const [mintPda, mintPdaBump] = await anchor.web3.PublicKey.findProgramAddress(
-        [Buffer.from(anchor.utils.bytes.utf8.encode("nft-mint"))],
+        [Buffer.from(anchor.utils.bytes.utf8.encode("nft-mint-2"))],
         program.programId);
 
     console.log("nft-mint PDA'S signature",mintPda.toBase58(), mintPdaBump);

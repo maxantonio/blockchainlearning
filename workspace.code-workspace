@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../NFT/spl-token-faucet"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}

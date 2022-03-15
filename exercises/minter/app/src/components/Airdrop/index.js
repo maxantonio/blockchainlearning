@@ -117,7 +117,7 @@ const AirDrop: FC = ({tokenName, reload, setReload, network, setNetwork}) => {
     }
   }
 
-  async function mintNft( mintPda, mintPdaBump) {
+  async function mintNft2( mintPda, mintPdaBump) {
     let signature = '';
     try {
       const [provider, connection] = GetProvider(wallet, network);
@@ -127,10 +127,12 @@ const AirDrop: FC = ({tokenName, reload, setReload, network, setNetwork}) => {
       let amountToAirdrop = new BN(1);
       console.log(
         connection,
-        provider.wallet,
+        provider.wallet.publicKey,
         receiver,
         receiver,
-        0
+        0,
+        TOKEN_PROGRAM_ID
+
       );
       const mint = await Token.createMint(
         connection,
@@ -138,37 +140,80 @@ const AirDrop: FC = ({tokenName, reload, setReload, network, setNetwork}) => {
         receiver,
         receiver,
         0
+        // TOKEN_PROGRAM_ID.toBase58()
       );
       console.log(mint)
-      const associatedTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        provider.wallet,
-        mint,
-        wallet.publicKey
-      );
-      await mintTo(
-        connection,
-        provider.wallet,
-        mint,
-        associatedTokenAccount.address,
-        provider.wallet,
-        1
-      );
-      let transaction = new Transaction()
-  .add(createSetAuthorityInstruction(
-    mint,
-    wallet.publicKey,
-    AuthorityType.MintTokens,
-    null
-  ));
+  //     const associatedTokenAccount = await getOrCreateAssociatedTokenAccount(
+  //       connection,
+  //       provider.wallet,
+  //       mint,
+  //       wallet.publicKey
+  //     );
+  //     await mintTo(
+  //       connection,
+  //       provider.wallet,
+  //       mint,
+  //       associatedTokenAccount.address,
+  //       provider.wallet,
+  //       1
+  //     );
+  //     let transaction = new Transaction()
+  // .add(createSetAuthorityInstruction(
+  //   mint,
+  //   wallet.publicKey,
+  //   AuthorityType.MintTokens,
+  //   null
+  // ));
   notify('info', `NFT Airdrop requested:`, signature, network);
 
-    await web3.sendAndConfirmTransaction(connection, transaction, [wallet]);
-      // await connection.confirmTransaction(signature, 'processed');
-      notify('success', `NFT Airdrop successful!`, signature, network);
-      setReload(!reload);
+    // await web3.sendAndConfirmTransaction(connection, transaction, [wallet]);
+    //   // await connection.confirmTransaction(signature, 'processed');
+    //   notify('success', `NFT Airdrop successful!`, signature, network);
+    //   setReload(!reload);
     } catch (err) {
       notify('error', `NFT Airdrop failed! ${err?.message}`, signature, network);
+    }
+  }
+
+  async function mintNft( mintPda, mintPdaBump){
+    let signature = '';
+    try {
+      const [provider, connection] = GetProvider(wallet, network);
+      const program = new Program(idl, programID, provider);
+      const receiver = new PublicKey(airdropPk);
+      let amountToAirdrop = new BN(1);
+
+      let associatedTokenAccount = await Token.getAssociatedTokenAddress(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        mintPda,
+        receiver,
+        true
+      );
+
+      signature = await program.rpc.mintnft(
+        mintPdaBump,
+        amountToAirdrop,
+        {
+          accounts: {
+            mint: mintPda,
+            destination: associatedTokenAccount,
+            payer: provider.wallet.publicKey,
+            receiver: receiver, 
+            systemProgram: SystemProgram.programId,
+            tokenProgram: TOKEN_PROGRAM_ID,
+            associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            rent: web3.SYSVAR_RENT_PUBKEY
+          },
+          signers: [],
+        }
+      );
+      notify('info', `${tokenName} Airdrop requested:`, signature, network);
+      await connection.confirmTransaction(signature, 'processed');
+      notify('success', `${tokenName} Airdrop successful!`, signature, network);
+      setReload(!reload);
+    } catch (err) {
+      notify('error', `${tokenName} Airdrop failed! ${err?.message}`, signature, network);
     }
   }
 
