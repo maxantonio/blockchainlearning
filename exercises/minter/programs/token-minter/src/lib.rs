@@ -27,15 +27,13 @@ pub mod token_minter {
         Ok(())
     }
     pub fn mintnft(ctx: Context<Mintnft>, mint_bump: u8, amount: u64) -> ProgramResult {
-        // let inner = vec![
-        //     b"state".as_ref(),
-        //     ctx.accounts.user_sending.key.as_ref(),
-        //     ctx.accounts.user_receiving.key.as_ref(),
-        //     mint_of_token_being_sent_pk.as_ref(), 
-        //     application_idx_bytes.as_ref(),
-        //     bump_vector.as_ref(),
-        // ];
-        // let outer = vec![inner.as_slice()];
+        let bump_vector = mint_bump.to_le_bytes();
+        let inner = vec![
+            b"nft-mint-2".as_ref(),
+            ctx.accounts.payer.key.as_ref(),
+            bump_vector.as_ref(),
+        ];
+        let outer = vec![inner.as_slice()];
         anchor_spl::token::mint_to(
             CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info(),
@@ -44,7 +42,7 @@ pub mod token_minter {
                     to: ctx.accounts.destination.to_account_info(),
                     authority: ctx.accounts.mint.to_account_info(),
                 },
-                &[&[&"nft-mint-2".as_bytes(), &[mint_bump]]],
+                outer.as_slice(),
             ),
             amount,
         )?;
@@ -104,7 +102,7 @@ pub struct Mintnft<'info> {
     #[account(
         init_if_needed,
         payer = payer,
-        seeds = [b"nft-mint-2".as_ref(),payer.key().as_ref()],
+        seeds = [b"nft-mint-2".as_ref(),payer.key.as_ref()],
         bump = mint_bump,
         mint::decimals = 0,
         mint::authority = mint
